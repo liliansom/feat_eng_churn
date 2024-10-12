@@ -2,8 +2,7 @@
 
 Feature engineering é o processo de transformar dados brutos em variáveis (features) que podem ser utilizadas por modelos de machine learning para melhorar a previsão e desempenho. Isso inclui a criação de novas features, como a extração de informações relevantes a partir de dados existentes, a transformação de dados categóricos em numéricos, a normalização de dados e a detecção e correção de valores ausentes ou discrepantes.
 
-O objetivo deste projeto é otimizar as features para aumentar a precisão e a eficiência do modelo, facilitando a identificação de padrões importantes nos dados.
-
+O objetivo deste projeto é otimizar as features para um modelo de machine learning, aumentar a precisão e a eficiência do modelo, facilitando assim a identificação de padrões importantes nos dados.
 
 # Etapas do Processo
 1. Introdução
