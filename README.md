@@ -41,6 +41,13 @@ O objetivo deste projeto é otimizar as features para um modelo de machine learn
 12. Criação das Variáveis
 
     Nesta etapa iremos criar as variáveis explicativas e variáveis históricas.
+
+    A cada variável criada serão realizados as seguintes etapas:
+
+    * Criação da variável
+    * Armazenamento do df em .parquet
+    * Criação da função desta variável no arquivo feature_store_churn
+    * Uso da função neste notebook
     
     7.1. Variáveis explicativas:
 
