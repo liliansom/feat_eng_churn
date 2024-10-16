@@ -1,5 +1,6 @@
 from pyspark.sql import DataFrame
 from pyspark.sql import functions as F
+from pyspark.sql import Window
 
 class FeatureStoreChurn:
     def __init__(self):
@@ -90,3 +91,42 @@ class FeatureStoreChurn:
             ).select("NB_ID_CLIENTE", "NB_FREQ_COMPRAS")
         
         return df_max_compras_01
+    
+    
+    def feat_gasto_total_cliente(self, df_transaction: DataFrame) -> DataFrame:
+                                 
+        columns_dic = {"ID Transação": "NB_ID_TRANSACAO"
+                       , "ID Cliente": "NB_ID_CLIENTE"
+                       , "Data": "DT_DATA"
+                       , "Valor": "NB_VALOR"
+                       , "Categoria": "TX_CATEGORIA"}
+                                 
+        df_transaction_01 = self.rename_columns(columns_dic, df_transaction)
+                                 
+        window_spec = Window.partitionBy("NB_ID_CLIENTE")
+        df_gasto_total = df_transaction_01.withColumn("NB_GASTO_TOTAL_CLIENTE", 
+                                                 F.round(F.sum("NB_VALOR").over(window_spec), 2)
+                                             ).select("NB_ID_CLIENTE", "NB_GASTO_TOTAL_CLIENTE")
+                                 
+        return df_gasto_total
+    
+    def feat_maior_categoria_cliente(self, df_transaction: Dataframe) -> Dataframe:
+        columns_dic = {"ID Transação": "NB_ID_TRANSACAO"
+                       , "ID Cliente": "NB_ID_CLIENTE"
+                       , "Data": "DT_DATA"
+                       , "Valor": "NB_VALOR"
+                       , "Categoria": "TX_CATEGORIA"}
+                                 
+        df_transaction_01 = self.rename_columns(columns_dic, df_transaction)
+                                     
+        window_spec = Window.partitionBy("NB_ID_CLIENTE", "TX_CATEGORIA")
+        window_rank = Window.partitionBy("NB_ID_CLIENTE").orderBy(F.desc("NB_GASTO_TOTAL_CLI_CAT"))
+
+        df_rank_gasto = (df_transaction_01
+                         .withColumn("NB_GASTO_TOTAL_CLI_CAT", F.round(F.sum("NB_VALOR").over(window_spec), 2))
+                         .withColumn("NB_RANK_GASTO_CLI_CAT", F.row_number().over(window_rank))
+                         .filter(F.col("NB_RANK_GASTO_CLI_CAT") == 1)
+                         .select("NB_ID_CLIENTE", F.col("TX_CATEGORIA").alias("TX_MAIOR_CATEGORIA"))
+                        )
+                                     
+        return df_rank_gasto
